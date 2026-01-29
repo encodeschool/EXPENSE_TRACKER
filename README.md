@@ -54,6 +54,11 @@ flutter run
 - Theme preference (light/dark) is also saved in Hive for automatic restoration.
 
 ## 🎨 Screenshots
+<img width="200" alt="Banner-6_Монтажная область 1" src="https://github.com/user-attachments/assets/e266f0bb-7dd8-4c5a-b16d-a3b92a7d9003" />
+<img width="200" alt="Banner-4_Монтажная область 1" src="https://github.com/user-attachments/assets/b99cd7f9-567d-4030-adc3-e9d1d0e90cda" />
+<img width="200" alt="Banner-3_Монтажная область 1" src="https://github.com/user-attachments/assets/1ae269c0-60d5-411f-bf77-920f62aba439" />
+<img width="200" alt="Banner-2_Монтажная область 1" src="https://github.com/user-attachments/assets/6619d897-9a55-4ca6-a5e7-4d36f1082301" />
+
 
 ## 📌 Future Enhancements
 - Monthly and yearly expense summaries
