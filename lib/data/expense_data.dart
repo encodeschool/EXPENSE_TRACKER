@@ -113,4 +113,41 @@ class ExpenseData extends ChangeNotifier {
 
     return dailyExpenseSummary;
   }
+
+  Map<String, double> calculateMonthlyExpenseSummary() {
+    Map<String, double> monthlySummary = {};
+
+    for (var expense in overallExpenseList) {
+      final key =
+          '${expense.dateTime.year}-${expense.dateTime.month.toString().padLeft(2, '0')}';
+
+      final amount = double.parse(expense.amount);
+
+      if (monthlySummary.containsKey(key)) {
+        monthlySummary[key] = monthlySummary[key]! + amount;
+      } else {
+        monthlySummary[key] = amount;
+      }
+    }
+
+    return monthlySummary;
+  }
+
+  Map<int, double> calculateYearlyExpenseSummary() {
+    Map<int, double> yearlySummary = {};
+
+    for (var expense in overallExpenseList) {
+      final year = expense.dateTime.year;
+      final amount = double.parse(expense.amount);
+
+      if (yearlySummary.containsKey(year)) {
+        yearlySummary[year] = yearlySummary[year]! + amount;
+      } else {
+        yearlySummary[year] = amount;
+      }
+    }
+
+    return yearlySummary;
+  }
+
 }

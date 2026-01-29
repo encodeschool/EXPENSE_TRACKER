@@ -8,6 +8,9 @@ import 'package:expense_tracker/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../graphs/monthly_chart.dart';
+import '../graphs/yearly_chart.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -182,83 +185,90 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ExpenseData>(
-      builder: (context, value, child) => Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: openExpenseDialog,
-          child: Icon(
-              Icons.add
+      builder: (context, value, child) => DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            centerTitle: true,
+            title: Text(
+                'Expense Tracker',
+                textAlign: TextAlign.center,
+            ),
+            bottom: const TabBar(
+              dividerColor: Colors.transparent,
+              tabs: [
+                Tab(text: 'Weekly'),
+                Tab(text: 'Monthly'),
+                Tab(text: 'Yearly'),
+              ],
+            ),
           ),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: ListView(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Switch Theme'
-                    ),
-                    Consumer<ThemeProvider>(
-                        builder: (context, theme, _) => Switch(
-                          value: theme.isDarkMode,
-                          onChanged: theme.toggleTheme,
-                        )
-                    )
-                  ],
-                ),
-              ),
-              ExpenseSummary(startOfWeek: value.startOfWeekDate()),
-              SizedBox(height: 15),
-              Padding(
-                padding: EdgeInsets.all(5),
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: value.getAllExpensesList().length,
-                    itemBuilder: (context, index) {
-                      final expense = value.getAllExpensesList()[index];
-
-                      return ExpenseTile(
-                        name: expense.name,
-                        dateTime: expense.dateTime,
-                        amount: expense.amount,
-                        onDelete: (_) {
-                          showDialog(
-                            context: context,
-                            builder: (dialogContext) => AlertDialog(
-                              title: const Text('Delete expense?'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(dialogContext),
-                                  child: const Text('Cancel'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(dialogContext);
-                                    deleteExpenseWithAutoCommit(
-                                      value.getAllExpensesList()[index],
-                                    );
-                                  },
-                                  child: const Text('Delete'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                        onEdit: (context) {
-                          openExpenseDialog(expense: expense);
-                        },
-                      );
-                    }
-                ),
-              ),
-            ]
+          floatingActionButton: FloatingActionButton(
+            onPressed: openExpenseDialog,
+            child: Icon(
+                Icons.add
+            ),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: TabBarView(
+              children: [
+                _buildWeeklyTab(value),
+                MonthlyChart(),
+                YearlyChart()
+              ]
+            ),
           ),
         ),
       ),
+    );
+  }
+  Widget _buildWeeklyTab(ExpenseData value) {
+    return ListView(
+      padding: const EdgeInsets.all(8),
+      children: [
+        SizedBox(height: 5),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Switch Theme'),
+              Consumer<ThemeProvider>(
+                builder: (context, theme, _) => Switch(
+                  value: theme.isDarkMode,
+                  onChanged: theme.toggleTheme,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        ExpenseSummary(startOfWeek: value.startOfWeekDate()),
+        const SizedBox(height: 15),
+
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: value.getAllExpensesList().length,
+          itemBuilder: (context, index) {
+            final expense = value.getAllExpensesList()[index];
+
+            return ExpenseTile(
+              name: expense.name,
+              dateTime: expense.dateTime,
+              amount: expense.amount,
+              onDelete: (_) {
+                deleteExpenseWithAutoCommit(expense);
+              },
+              onEdit: (_) {
+                openExpenseDialog(expense: expense);
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 }
